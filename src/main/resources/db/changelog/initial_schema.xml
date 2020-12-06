@@ -1,0 +1,168 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="sergtm" id="createValidationCode">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="VALIDATION_CODE" schemaName=""/>
+            </not>
+        </preConditions>
+        <createTable tableName="VALIDATION_CODE">
+            <column name="ID" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="CODE" type="VARCHAR(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAIL" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALID_UNTIL" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint
+                columnNames="CODE"
+                constraintName="unique_code_constraint"
+                tableName="VALIDATION_CODE"/>
+    </changeSet>
+
+    <changeSet author="sergtm" id="createPatient">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="PATIENT" schemaName=""/>
+            </not>
+        </preConditions>
+        <createTable tableName="PATIENT">
+            <column name="ID" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="FIRST_NAME" type="VARCHAR2(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_NAME" type="VARCHAR2(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PESEL" type="VARCHAR2(30)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint
+                columnNames="PESEL"
+                constraintName="unique_pesel_constraint"
+                tableName="PATIENT"/>
+    </changeSet>
+
+    <changeSet author="sergtm" id="createLead">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="LEAD" schemaName=""/>
+            </not>
+        </preConditions>
+        <createTable tableName="LEAD">
+            <column name="ID" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="LABEL" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PATIENT_ID" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="PATIENT"
+                                 baseColumnNames="PATIENT_ID"
+                                 constraintName="fk_lead_patient_id"
+                                 referencedTableName="PATIENT"
+                                 referencedColumnNames="ID"/>
+    </changeSet>
+
+    <changeSet author="sergtm" id="createFullInterval">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FULL_INTERVAL" schemaName=""/>
+            </not>
+        </preConditions>
+        <createTable tableName="FULL_INTERVAL">
+            <column name="ID" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="P" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Q" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="R" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="S" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="T" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="U" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <!--todo: probably add non null constraint-->
+            <column name="LEAD_ID" type="integer"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="FULL_INTERVAL"
+                                 baseColumnNames="LEAD_ID"
+                                 constraintName="fk_full_interval_lead_id"
+                                 referencedTableName="LEAD"
+                                 referencedColumnNames="ID"/>
+    </changeSet>
+
+    <changeSet author="sergtm" id="createSmallInterval">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="SMALL_INTERVAL" schemaName=""/>
+            </not>
+        </preConditions>
+        <createTable tableName="SMALL_INTERVAL">
+            <column name="ID" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="INTERVAL_NAME" type="VARCHAR2(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FULL_INTERVAL_ID" type="integer"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="SMALL_INTERVAL"
+                                 baseColumnNames="FULL_INTERVAL_ID"
+                                 constraintName="fk_small_interval_full_interval_id"
+                                 referencedTableName="FULL_INTERVAL"
+                                 referencedColumnNames="ID"/>
+    </changeSet>
+
+    <changeSet author="sergtm" id="createUser">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="EKG_USER" schemaName=""/>
+            </not>
+        </preConditions>
+        <createTable tableName="EKG_USER">
+            <column name="ID" type="integer" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="EMAIL" type="VARCHAR2(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PASSWORD" type="VARCHAR2(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint
+                columnNames="EMAIL"
+                constraintName="unique_email_constraint"
+                tableName="USER"/>
+    </changeSet>
+</databaseChangeLog>
