@@ -14,4 +14,6 @@ public interface IUserService {
     Integer save(UserDTO user);
 
     boolean validateCode(String email, String code);
+
+    boolean activateUser(String email, String code);
 }

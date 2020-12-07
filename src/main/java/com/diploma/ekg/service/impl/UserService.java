@@ -51,6 +51,8 @@ public class UserService implements IUserService {
     @Override
     public Integer save(UserDTO userDTO) {
         User save = userRepository.save(userDTO.toEntity());
+        CodeForUserValidationCode newCode = createCode(save);
+        sendEmailWithConfirmationCode(newCode);
         return save.getId();
     }
 
@@ -61,6 +63,23 @@ public class UserService implements IUserService {
         return codeFromRepo
                 .map(validationCode -> validationCode.getCode().equals(code))
                 .orElse(false);
+    }
+
+    @Override
+    public boolean activateUser(String email, String code) {
+        CodeForUserValidationCode codeFromRepo = userValidationRepository.findCodeForUserValidationByEmail(email).orElse(null);
+        boolean isValid = false;
+        if (codeFromRepo != null) {
+            isValid = codeFromRepo.getCode().equals(code);
+        }
+        if (isValid) {
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user != null) {
+                user.setActive();
+                userRepository.save(user);
+            }
+        }
+        return isValid;
     }
 
     private void sendEmailWithConfirmationCode(CodeForUserValidationCode newCode) {

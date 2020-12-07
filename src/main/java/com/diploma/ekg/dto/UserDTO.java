@@ -4,7 +4,14 @@ import com.diploma.ekg.entity.User;
 
 public class UserDTO {
 
+    public String email;
+
+    public String password;
+
     public User toEntity() {
-        return null;
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        return user;
     }
 }

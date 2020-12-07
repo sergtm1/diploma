@@ -32,4 +32,9 @@ public class UserController {
     public boolean validateCode(@RequestParam String email, String code) {
         return IUserService.validateCode(email, code);
     }
+
+    @GetMapping(path = "/activateUser")
+    public boolean activateUser(@RequestParam String email, String code) {
+        return IUserService.activateUser(email, code);
+    }
 }
