@@ -49,9 +49,11 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public Integer save(UserDTO userDTO) {
         User save = userRepository.save(userDTO.toEntity());
         CodeForUserValidationCode newCode = createCode(save);
+        userValidationRepository.save(newCode);
         sendEmailWithConfirmationCode(newCode);
         return save.getId();
     }
@@ -75,7 +77,7 @@ public class UserService implements IUserService {
         if (isValid) {
             User user = userRepository.findByEmail(email).orElse(null);
             if (user != null) {
-                user.setActive();
+                user.setActive(true);
                 userRepository.save(user);
             }
         }
@@ -86,8 +88,6 @@ public class UserService implements IUserService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(newCode.getEmail());
         mailMessage.setSubject("Reset password code");
-        //todo: set actual mail
-        mailMessage.setFrom("test@gmail.com");
         mailMessage.setText(
                 String.format("To reset your password enter next code into application: %s", newCode.getCode())
         );

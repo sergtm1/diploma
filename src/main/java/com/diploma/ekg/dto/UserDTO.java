@@ -12,6 +12,7 @@ public class UserDTO {
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
+        user.setActive(false);
         return user;
     }
 }

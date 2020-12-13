@@ -18,6 +18,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/save")
+    @ResponseBody
     public Integer save(@RequestBody UserDTO user) {
         return IUserService.save(user);
     }
@@ -29,11 +30,13 @@ public class UserController {
 
     //todo: create separate controller and probably object for email
     @GetMapping(path = "/validateCode")
+    @ResponseBody
     public boolean validateCode(@RequestParam String email, String code) {
         return IUserService.validateCode(email, code);
     }
 
     @GetMapping(path = "/activateUser")
+    @ResponseBody
     public boolean activateUser(@RequestParam String email, String code) {
         return IUserService.activateUser(email, code);
     }
