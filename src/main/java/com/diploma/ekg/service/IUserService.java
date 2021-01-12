@@ -16,4 +16,6 @@ public interface IUserService {
     boolean validateCode(String email, String code);
 
     boolean activateUser(String email, String code);
+
+    Integer getUserIdByEmail(String email);
 }

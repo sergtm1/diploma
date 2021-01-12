@@ -68,6 +68,15 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public Integer getUserIdByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return user.get().getId();
+        }
+        throw new IllegalStateException("User is missing");
+    }
+
+    @Override
     public boolean activateUser(String email, String code) {
         CodeForUserValidationCode codeFromRepo = userValidationRepository.findCodeForUserValidationByEmail(email).orElse(null);
         boolean isValid = false;

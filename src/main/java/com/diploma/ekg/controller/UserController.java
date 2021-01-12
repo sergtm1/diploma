@@ -23,6 +23,12 @@ public class UserController {
         return IUserService.save(user);
     }
 
+    @GetMapping(path = "/get")
+    @ResponseBody
+    public Integer getUserIdByEmail(String email) {
+        return IUserService.getUserIdByEmail(email);
+    }
+
     @PostMapping(path = "/{userId}/resetPassword")
     public void resetPassword(@PathVariable Integer userId) {
         IUserService.getResetPasswordCode(userId);
