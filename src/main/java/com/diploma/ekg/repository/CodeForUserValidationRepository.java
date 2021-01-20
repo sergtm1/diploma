@@ -1,11 +1,13 @@
 package com.diploma.ekg.repository;
 
-import com.diploma.ekg.entity.CodeForUserValidationCode;
+import com.diploma.ekg.entity.CodeForUserValidation;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface CodeForUserValidationRepository extends CrudRepository<CodeForUserValidationCode, Integer> {
+public interface CodeForUserValidationRepository extends CrudRepository<CodeForUserValidation, Integer> {
 
-    Optional<CodeForUserValidationCode> findCodeForUserValidationByEmail(String email);
+    Optional<CodeForUserValidation> findCodeForUserValidationByEmail(String email);
+
+    void removeCodeForUserValidationByEmail(String email);
 }

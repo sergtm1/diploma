@@ -1,7 +1,7 @@
 package com.diploma.ekg.service.impl;
 
 import com.diploma.ekg.dto.UserDTO;
-import com.diploma.ekg.entity.CodeForUserValidationCode;
+import com.diploma.ekg.entity.CodeForUserValidation;
 import com.diploma.ekg.entity.User;
 import com.diploma.ekg.repository.CodeForUserValidationRepository;
 import com.diploma.ekg.repository.UserRepository;
@@ -43,7 +43,7 @@ public class UserService implements IUserService {
         User user = userRepository.findById(userId).orElseThrow(IllegalAccessError::new);
         userValidationRepository.findCodeForUserValidationByEmail(user.getEmail()).ifPresent(userValidationRepository::delete);
         //todo: generate indeed valid code or check email during validation(other possibility is to validate email during reset process)
-        CodeForUserValidationCode newCode = createCode(user);
+        CodeForUserValidation newCode = createCode(user);
         userValidationRepository.save(newCode);
         sendEmailWithConfirmationCode(newCode);
     }
@@ -52,7 +52,7 @@ public class UserService implements IUserService {
     @Transactional
     public Integer save(UserDTO userDTO) {
         User save = userRepository.save(userDTO.toEntity());
-        CodeForUserValidationCode newCode = createCode(save);
+        CodeForUserValidation newCode = createCode(save);
         userValidationRepository.save(newCode);
         sendEmailWithConfirmationCode(newCode);
         return save.getId();
@@ -60,7 +60,7 @@ public class UserService implements IUserService {
 
     @Override
     public boolean validateCode(String email, String code) {
-        Optional<CodeForUserValidationCode> codeFromRepo
+        Optional<CodeForUserValidation> codeFromRepo
                 = userValidationRepository.findCodeForUserValidationByEmail(email);
         return codeFromRepo
                 .map(validationCode -> validationCode.getCode().equals(code))
@@ -77,8 +77,19 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void sendValidationCode(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user != null) {
+            userValidationRepository.removeCodeForUserValidationByEmail(email);
+            CodeForUserValidation newCode = createCode(user);
+            userValidationRepository.save(newCode);
+            sendEmailWithConfirmationCode(newCode);
+        }
+    }
+
+    @Override
     public boolean activateUser(String email, String code) {
-        CodeForUserValidationCode codeFromRepo = userValidationRepository.findCodeForUserValidationByEmail(email).orElse(null);
+        CodeForUserValidation codeFromRepo = userValidationRepository.findCodeForUserValidationByEmail(email).orElse(null);
         boolean isValid = false;
         if (codeFromRepo != null) {
             isValid = codeFromRepo.getCode().equals(code);
@@ -93,7 +104,7 @@ public class UserService implements IUserService {
         return isValid;
     }
 
-    private void sendEmailWithConfirmationCode(CodeForUserValidationCode newCode) {
+    private void sendEmailWithConfirmationCode(CodeForUserValidation newCode) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(newCode.getEmail());
         mailMessage.setSubject("Reset password code");
@@ -103,8 +114,8 @@ public class UserService implements IUserService {
         emailSenderService.sendEmail(mailMessage);
     }
 
-    private CodeForUserValidationCode createCode(User user) {
-        CodeForUserValidationCode newCode = new CodeForUserValidationCode();
+    private CodeForUserValidation createCode(User user) {
+        CodeForUserValidation newCode = new CodeForUserValidation();
         newCode.setCode(RandomStringUtils.randomNumeric(6));
         newCode.setEmail(user.getEmail());
         return newCode;

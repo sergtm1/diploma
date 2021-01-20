@@ -18,4 +18,6 @@ public interface IUserService {
     boolean activateUser(String email, String code);
 
     Integer getUserIdByEmail(String email);
+
+    void sendValidationCode(String email);
 }

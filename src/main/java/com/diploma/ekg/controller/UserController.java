@@ -46,4 +46,10 @@ public class UserController {
     public boolean activateUser(@RequestParam String email, String code) {
         return IUserService.activateUser(email, code);
     }
+
+    @PutMapping(path = "/sendValidationCode")
+    @ResponseBody
+    public void sendValidationCode(@RequestParam String email) {
+        IUserService.sendValidationCode(email);
+    }
 }

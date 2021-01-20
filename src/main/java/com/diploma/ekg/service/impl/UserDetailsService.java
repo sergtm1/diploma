@@ -2,7 +2,6 @@ package com.diploma.ekg.service.impl;
 
 import com.diploma.ekg.entity.User;
 import com.diploma.ekg.service.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -10,14 +9,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
-    @Autowired
-    private IUserService userService;
+    private final IUserService userService;
+
+    public UserDetailsService(IUserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
         User user = userService.findUser(mail).orElse(null);
         if (user == null) {
             throw new UsernameNotFoundException("User wasn't found");
+        } else if (!user.isActive()) {
+            throw new IllegalStateException("User is not active");
         }
         return buildUserFromEntity(user);
     }
