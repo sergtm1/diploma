@@ -29,9 +29,14 @@ public class UserController {
         return IUserService.getUserIdByEmail(email);
     }
 
-    @PostMapping(path = "/{userId}/resetPassword")
-    public void resetPassword(@PathVariable Integer userId) {
-        IUserService.getResetPasswordCode(userId);
+    @PostMapping(path = "/sendResetPasswordCode")
+    public void sendResetPasswordCode(@RequestParam String email) {
+        IUserService.sendResetPasswordCode(email);
+    }
+
+    @PostMapping(path = "/resetPassword")
+    public void resetPassword(@RequestParam String email, @RequestParam String code, @RequestParam String newPassword) {
+        IUserService.resetPasswordCode(email, code, newPassword);
     }
 
     //todo: create separate controller and probably object for email

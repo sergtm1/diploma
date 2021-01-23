@@ -9,8 +9,6 @@ public interface IUserService {
 
     Optional<User> findUser(String email);
 
-    void getResetPasswordCode(Integer userId);
-
     Integer save(UserDTO user);
 
     boolean validateCode(String email, String code);
@@ -20,4 +18,8 @@ public interface IUserService {
     Integer getUserIdByEmail(String email);
 
     void sendValidationCode(String email);
+
+    void resetPasswordCode(String email, String code, String newPassword);
+
+    void sendResetPasswordCode(String email);
 }

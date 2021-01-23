@@ -40,17 +40,6 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public void getResetPasswordCode(Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(IllegalAccessError::new);
-        userValidationRepository.findCodeForUserValidationByEmail(user.getEmail()).ifPresent(userValidationRepository::delete);
-        //todo: generate indeed valid code or check email during validation(other possibility is to validate email during reset process)
-        CodeForUserValidation newCode = createCode(user);
-        userValidationRepository.save(newCode);
-        sendEmailWithConfirmationCode(newCode);
-    }
-
-    @Override
-    @Transactional
     public Integer save(UserDTO userDTO) {
         User save = userRepository.save(userDTO.toEntity());
         CodeForUserValidation newCode = createCode(save);
@@ -107,6 +96,27 @@ public class UserService implements IUserService {
             }
         }
         return isValid;
+    }
+
+    @Override
+    public void resetPasswordCode(String email, String code, String newPassword) {
+        User user = userRepository.findByEmail(email).orElseThrow(IllegalAccessError::new);
+        CodeForUserValidation userCode = userValidationRepository.findCodeForUserValidationByEmail(user.getEmail())
+                .orElse(null);
+        if (userCode != null && userCode.getCode().equals(code)) {
+            user.setPassword(newPassword);
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public void sendResetPasswordCode(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(IllegalAccessError::new);
+        userValidationRepository.findCodeForUserValidationByEmail(user.getEmail()).ifPresent(userValidationRepository::delete);
+        //todo: generate indeed valid code or check email during validation(other possibility is to validate email during reset process)
+        CodeForUserValidation newCode = createCode(user);
+        userValidationRepository.save(newCode);
+        sendEmailWithConfirmationCode(newCode);
     }
 
     private void sendEmailWithConfirmationCode(CodeForUserValidation newCode) {
