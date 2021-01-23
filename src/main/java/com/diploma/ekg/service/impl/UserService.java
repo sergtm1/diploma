@@ -33,6 +33,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public Optional<User> findUser(String email) {
         return userRepository.findByEmail(email);
     }
@@ -59,6 +60,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public boolean validateCode(String email, String code) {
         Optional<CodeForUserValidation> codeFromRepo
                 = userValidationRepository.findCodeForUserValidationByEmail(email);
@@ -68,6 +70,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public Integer getUserIdByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
@@ -77,6 +80,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public void sendValidationCode(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {
@@ -88,6 +92,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public boolean activateUser(String email, String code) {
         CodeForUserValidation codeFromRepo = userValidationRepository.findCodeForUserValidationByEmail(email).orElse(null);
         boolean isValid = false;
