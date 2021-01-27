@@ -25,12 +25,6 @@ public class UserController {
         return IUserService.save(user);
     }
 
-    @GetMapping(path = "/get")
-    @ResponseBody
-    public Integer getUserIdByEmail(String email) {
-        return IUserService.getUserIdByEmail(email);
-    }
-
     @PutMapping(path = "/sendResetPasswordCode")
     @ResponseBody
     public void sendResetPasswordCode(@RequestBody EmailDTO email) {
@@ -41,13 +35,6 @@ public class UserController {
     @ResponseBody
     public void resetPassword(@RequestBody ResetPasswordRequest email) {
         IUserService.resetPasswordCode(email.email, email.code, email.newPassword);
-    }
-
-    //todo: create separate controller and probably object for email
-    @GetMapping(path = "/validateCode")
-    @ResponseBody
-    public boolean validateCode(@RequestParam String email, @RequestParam String code) {
-        return IUserService.validateCode(email, code);
     }
 
     @GetMapping(path = "/activateUser")

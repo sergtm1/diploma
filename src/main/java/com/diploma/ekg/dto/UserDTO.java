@@ -13,7 +13,6 @@ public class UserDTO {
         user.setEmail(email);
         user.setPassword(password);
         user.setActive(false);
-        user.setAdminActive(false);
         return user;
     }
 }

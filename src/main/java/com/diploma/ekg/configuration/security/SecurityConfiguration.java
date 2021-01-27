@@ -6,7 +6,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -18,16 +17,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().
                 authorizeRequests()
-                .antMatchers("/login").permitAll()
+                .antMatchers("/loginErrors").permitAll()
                 .antMatchers("/user/**").permitAll()
                 .antMatchers("/**").authenticated()
                 .and()
-                .httpBasic()
-                .and()
-                .logout()
-                .deleteCookies("remove")
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .permitAll();
+                .httpBasic();
     }
 
     @Override

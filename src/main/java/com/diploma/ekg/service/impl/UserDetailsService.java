@@ -19,9 +19,9 @@ public class UserDetailsService implements org.springframework.security.core.use
     public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
         User user = userService.findUser(mail).orElse(null);
         if (user == null) {
-            throw new UsernameNotFoundException("User wasn't found");
+            throw new UsernameNotFoundException("not_found");
         } else if (!user.isActive()) {
-            throw new IllegalStateException("User is not active");
+            throw new IllegalStateException("unactive");
         }
         return buildUserFromEntity(user);
     }
