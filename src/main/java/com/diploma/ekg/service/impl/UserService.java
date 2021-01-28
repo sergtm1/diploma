@@ -6,12 +6,14 @@ import com.diploma.ekg.entity.User;
 import com.diploma.ekg.repository.CodeForUserValidationRepository;
 import com.diploma.ekg.repository.UserRepository;
 import com.diploma.ekg.service.IUserService;
+import com.diploma.ekg.utils.exceptions.CustomException;
+import com.diploma.ekg.utils.exceptions.MissingObjectException;
+import com.diploma.ekg.utils.exceptions.OutDatedCodeException;
+import com.diploma.ekg.utils.exceptions.WrongCodeException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -67,9 +69,9 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public boolean activateUser(String email, String code) {
+    public boolean activateUser(String email, String code) throws CustomException {
         CodeForUserValidation codeFromRepo = userValidationRepository.findCodeForUserValidationByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "no_code"));
+                .orElseThrow(() -> new MissingObjectException("no_code"));
         validateCode(code, codeFromRepo);
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {
@@ -80,11 +82,11 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void resetPasswordCode(String email, String code, String newPassword) {
+    public void resetPasswordCode(String email, String code, String newPassword) throws CustomException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "no_user"));
+                .orElseThrow(() -> new MissingObjectException("no_user"));
         CodeForUserValidation codeFromRepo = userValidationRepository.findCodeForUserValidationByEmail(user.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "no_code"));
+                .orElseThrow(() -> new MissingObjectException("no_code"));
         validateCode(code, codeFromRepo);
         user.setPassword(newPassword);
         userRepository.save(user);
@@ -111,11 +113,11 @@ public class UserService implements IUserService {
         return errors;
     }
 
-    private void validateCode(String code, CodeForUserValidation codeFromRepo) {
+    private void validateCode(String code, CodeForUserValidation codeFromRepo) throws OutDatedCodeException, WrongCodeException {
         if (!codeFromRepo.getCode().equals(code)) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "wrong_code");
-        } else if (codeFromRepo.getValidUntil().isAfter(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "outdated_code");
+            throw new WrongCodeException();
+        } else if (codeFromRepo.getValidUntil().isBefore(LocalDateTime.now())) {
+            throw new OutDatedCodeException();
         }
     }
 

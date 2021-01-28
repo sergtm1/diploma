@@ -4,9 +4,12 @@ import com.diploma.ekg.dto.EmailDTO;
 import com.diploma.ekg.dto.ResetPasswordRequest;
 import com.diploma.ekg.dto.UserDTO;
 import com.diploma.ekg.service.IUserService;
+import com.diploma.ekg.utils.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping(path = "/user")
@@ -34,13 +37,21 @@ public class UserController {
     @PostMapping(path = "/resetPassword")
     @ResponseBody
     public void resetPassword(@RequestBody ResetPasswordRequest email) {
-        IUserService.resetPasswordCode(email.email, email.code, email.newPassword);
+        try {
+            IUserService.resetPasswordCode(email.email, email.code, email.newPassword);
+        } catch (CustomException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
     @GetMapping(path = "/activateUser")
     @ResponseBody
     public boolean activateUser(@RequestParam String email, @RequestParam String code) {
-        return IUserService.activateUser(email, code);
+        try {
+            return IUserService.activateUser(email, code);
+        } catch (CustomException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
     @PutMapping(path = "/sendValidationCode")
