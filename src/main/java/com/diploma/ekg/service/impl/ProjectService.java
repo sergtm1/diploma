@@ -88,6 +88,14 @@ public class ProjectService implements IProjectService {
         return mapToDTOs(projects);
     }
 
+    @Override
+    public Collection<ProjectDTO> getProjectsForPatient(String username, Integer patientId) throws MissingObjectException {
+        User user = userService.getUser(username);
+        Patient patient = patientService.getPatient(patientId);
+        Collection<Project> projects = projectRepository.findProjectsByUserAndPatient(user, patient);
+        return mapToDTOs(projects);
+    }
+
     private List<ProjectDTO> mapToDTOs(Iterable<Project> iterable) {
         List<ProjectDTO> projectDTOs = new ArrayList<>();
         iterable.forEach(patient -> projectDTOs.add(patient.toDTO()));

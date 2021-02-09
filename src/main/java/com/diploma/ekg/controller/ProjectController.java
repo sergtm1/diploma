@@ -2,6 +2,7 @@ package com.diploma.ekg.controller;
 
 import com.diploma.ekg.dto.ProjectDTO;
 import com.diploma.ekg.request.CreateProjectRequest;
+import com.diploma.ekg.request.UpdateProjectRequest;
 import com.diploma.ekg.service.IProjectService;
 import com.diploma.ekg.utils.exceptions.MissingObjectException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 @Controller
-@RequestMapping("/ekg")
+@RequestMapping("/project")
 public class ProjectController {
 
     private final IProjectService projectService;
@@ -36,6 +37,18 @@ public class ProjectController {
         }
     }
 
+    @PostMapping(path = "/update")
+    @ResponseBody
+    public void update(@RequestBody UpdateProjectRequest request) {
+        try {
+            projectService.updateProject(request);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Can't get bytes of image");
+        } catch (MissingObjectException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
     @GetMapping(path = "/getAll")
     public Collection<ProjectDTO> getAllProjects() {
         return projectService.getAll();
@@ -50,8 +63,17 @@ public class ProjectController {
         }
     }
 
+    @GetMapping(path = "/getProjectsForPatient")
+    public Collection<ProjectDTO> getProjectsForPatient(@RequestParam String username, @RequestParam Integer patientId) {
+        try {
+            return projectService.getProjectsForPatient(username, patientId);
+        } catch (MissingObjectException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
     @DeleteMapping(path = "/{projectId}")
-    public void deleteEkg(@PathVariable Integer projectId) {
+    public void deleteProject(@PathVariable Integer projectId) {
         projectService.deleteProject(projectId);
     }
 }

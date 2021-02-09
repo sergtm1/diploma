@@ -19,4 +19,6 @@ public interface IProjectService {
     Collection<ProjectDTO> getAll();
 
     Collection<ProjectDTO> getProjectsOfUser(String username) throws MissingObjectException;
+
+    Collection<ProjectDTO> getProjectsForPatient(String username, Integer patientId) throws MissingObjectException;
 }
