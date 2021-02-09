@@ -3,6 +3,7 @@ package com.diploma.ekg.service;
 import com.diploma.ekg.dto.UserDTO;
 import com.diploma.ekg.entity.User;
 import com.diploma.ekg.utils.exceptions.CustomException;
+import com.diploma.ekg.utils.exceptions.MissingObjectException;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +23,6 @@ public interface IUserService {
     void sendResetPasswordCode(String email);
 
     List<String> loginErrors(String email);
+
+    User getUser(String username) throws MissingObjectException;
 }

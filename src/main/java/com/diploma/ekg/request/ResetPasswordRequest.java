@@ -1,4 +1,4 @@
-package com.diploma.ekg.dto;
+package com.diploma.ekg.request;
 
 public class ResetPasswordRequest {
 

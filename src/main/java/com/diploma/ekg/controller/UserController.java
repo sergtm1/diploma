@@ -1,8 +1,8 @@
 package com.diploma.ekg.controller;
 
 import com.diploma.ekg.dto.EmailDTO;
-import com.diploma.ekg.dto.ResetPasswordRequest;
 import com.diploma.ekg.dto.UserDTO;
+import com.diploma.ekg.request.ResetPasswordRequest;
 import com.diploma.ekg.service.IUserService;
 import com.diploma.ekg.utils.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;

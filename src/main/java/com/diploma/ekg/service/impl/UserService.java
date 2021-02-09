@@ -46,12 +46,21 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public User getUser(String email) throws MissingObjectException {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            throw new MissingObjectException("User is missing");
+        }
+        return user;
+    }
+
+    @Override
     @Transactional
     public Integer save(UserDTO userDTO) {
         User save = userRepository.save(userDTO.toEntity());
         CodeForUserValidation newCode = createCode(save);
         userValidationRepository.save(newCode);
-        sendEmailWithConfirmationCode(newCode);
+        sendEmailWithCode(newCode, EmailType.ACTIVATE_ACCOUNT);
         return save.getId();
     }
 
@@ -63,7 +72,7 @@ public class UserService implements IUserService {
             userValidationRepository.removeCodeForUserValidationByEmail(email);
             CodeForUserValidation newCode = createCode(user);
             userValidationRepository.save(newCode);
-            sendEmailWithConfirmationCode(newCode);
+            sendEmailWithCode(newCode, EmailType.ACTIVATE_ACCOUNT);
         }
     }
 
@@ -82,6 +91,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public void resetPasswordCode(String email, String code, String newPassword) throws CustomException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new MissingObjectException("no_user"));
@@ -93,15 +103,17 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public void sendResetPasswordCode(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(IllegalAccessError::new);
         userValidationRepository.findCodeForUserValidationByEmail(user.getEmail()).ifPresent(userValidationRepository::delete);
         CodeForUserValidation newCode = createCode(user);
         userValidationRepository.save(newCode);
-        sendEmailWithConfirmationCode(newCode);
+        sendEmailWithCode(newCode, EmailType.RESET_PASSWORD);
     }
 
     @Override
+    @Transactional
     public List<String> loginErrors(String email) {
         List<String> errors = new ArrayList<>();
         User user = findUser(email).orElse(null);
@@ -129,13 +141,23 @@ public class UserService implements IUserService {
         return newCode;
     }
 
-    private void sendEmailWithConfirmationCode(CodeForUserValidation newCode) {
+    private void sendEmailWithCode(CodeForUserValidation newCode, EmailType emailType) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(newCode.getEmail());
-        mailMessage.setSubject("Reset password code");
+        mailMessage.setSubject(emailType.message);
         mailMessage.setText(
-                String.format("To reset your password enter next code into application: %s", newCode.getCode())
+                String.format("%s: %s", emailType.message, newCode.getCode())
         );
         emailSenderService.sendEmail(mailMessage);
+    }
+
+    private enum EmailType {
+        RESET_PASSWORD("Reset password code"), ACTIVATE_ACCOUNT("Account activation code");
+
+        private String message;
+
+        EmailType(String message) {
+            this.message = message;
+        }
     }
 }
