@@ -1,5 +1,6 @@
 package com.diploma.ekg.request;
 
+import com.diploma.ekg.dto.PatientDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 public class CreateProjectRequest {
@@ -12,6 +13,17 @@ public class CreateProjectRequest {
 
     public String username;
 
-    public Integer patientId;
+    public String patientFirstName;
 
+    public String patientLastName;
+
+    public String PESEL;
+
+    public PatientDTO toPatientDTO() {
+        PatientDTO patient = new PatientDTO();
+        patient.firstName = patientFirstName;
+        patient.lastName = patientLastName;
+        patient.PESEL = PESEL;
+        return patient;
+    }
 }

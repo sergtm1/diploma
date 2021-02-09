@@ -22,7 +22,7 @@ public class PatientController {
     @PostMapping(path = "/save")
     @ResponseBody
     public Integer save(@RequestBody PatientDTO request) {
-        return patientService.save(request);
+        return patientService.save(request).getId();
     }
 
     @GetMapping(path = "/getAll")

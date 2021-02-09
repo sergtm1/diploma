@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PatientService implements IPatientService {
@@ -25,9 +26,8 @@ public class PatientService implements IPatientService {
 
     @Override
     @Transactional
-    public Integer save(PatientDTO patient) {
-        Patient savedPatient = patientRepository.save(patient.toEntity());
-        return savedPatient.getId();
+    public Patient save(PatientDTO patient) {
+        return patientRepository.save(patient.toEntity());
     }
 
     @Override
@@ -50,6 +50,12 @@ public class PatientService implements IPatientService {
             throw new MissingObjectException("Can't find patient");
         }
         return patient;
+    }
+
+    @Override
+    @Transactional
+    public Optional<Patient> findPatientByPesel(String PESEL) {
+        return patientRepository.findPatientByPesel(PESEL);
     }
 
     private List<PatientDTO> mapToDTOs(Iterable<Patient> iterable) {

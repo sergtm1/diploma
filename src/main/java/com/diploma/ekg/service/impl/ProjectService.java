@@ -1,6 +1,7 @@
 package com.diploma.ekg.service.impl;
 
 import com.diploma.ekg.dto.ProjectDTO;
+import com.diploma.ekg.entity.Patient;
 import com.diploma.ekg.entity.Project;
 import com.diploma.ekg.entity.User;
 import com.diploma.ekg.repository.ProjectRepository;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectService implements IProjectService {
@@ -40,7 +42,9 @@ public class ProjectService implements IProjectService {
     public Integer createProject(CreateProjectRequest request) throws MissingObjectException, IOException {
         Project project = new Project();
         project.setUser(userService.getUser(request.username));
-        project.setPatient(patientService.getPatient(request.patientId));
+        Optional<Patient> patientByPesel = patientService.findPatientByPesel(request.PESEL);
+        Patient patient = patientByPesel.orElseGet(() -> patientService.save(request.toPatientDTO()));
+        project.setPatient(patient);
         project.setName(request.projectName);
         project.setPaperSpeed(request.paperSpeed);
         project.setImage(request.multipartFile.getBytes());
@@ -48,14 +52,15 @@ public class ProjectService implements IProjectService {
         return savedProject.getId();
     }
 
-    //todo: maybe validate that fields present
     @Override
     @Transactional
     public Integer updateProject(UpdateProjectRequest request) throws MissingObjectException, IOException {
         Project project = projectRepository.findById(request.id)
                 .orElseThrow(() -> new MissingObjectException("Can't load project"));
         project.setUser(userService.getUser(request.username));
-        project.setPatient(patientService.getPatient(request.patientId));
+        Optional<Patient> patientByPesel = patientService.findPatientByPesel(request.PESEL);
+        Patient patient = patientByPesel.orElseGet(() -> patientService.save(request.toPatientDTO()));
+        project.setPatient(patient);
         project.setName(request.projectName);
         project.setPaperSpeed(request.paperSpeed);
         project.setImage(request.multipartFile.getBytes());
