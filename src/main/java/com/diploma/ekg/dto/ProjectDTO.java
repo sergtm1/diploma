@@ -4,8 +4,6 @@ public class ProjectDTO {
 
     public String name;
 
-    public Integer paperSpeed;
-
     public String email;
 
     public String patientFirstName;
@@ -13,4 +11,6 @@ public class ProjectDTO {
     public String patientLastName;
 
     public String patientPESEL;
+
+    public String projectBody;
 }

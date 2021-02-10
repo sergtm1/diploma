@@ -1,29 +1,51 @@
 package com.diploma.ekg.request;
 
 import com.diploma.ekg.dto.PatientDTO;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.regex.Pattern;
 
 public class CreateProjectRequest {
 
+    private final String regex = "^(.+)@(.+)$";
+
     public String projectName;
 
-    public Integer paperSpeed;
-
-    public MultipartFile multipartFile;
-
-    public String username;
+    public String email;
 
     public String patientFirstName;
 
     public String patientLastName;
 
-    public String PESEL;
+    public String patientPESEL;
+
+    public String projectBody;
 
     public PatientDTO toPatientDTO() {
         PatientDTO patient = new PatientDTO();
         patient.firstName = patientFirstName;
         patient.lastName = patientLastName;
-        patient.PESEL = PESEL;
+        patient.PESEL = patientPESEL;
         return patient;
+    }
+
+    public void validateFields() {
+        if (!Pattern.compile(regex).matcher(email).matches()) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    String.format("Passed email has wrong format. email: %s", email));
+        }
+        if (patientFirstName == null || patientFirstName.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "First name can't be empty");
+        }
+        if (patientLastName == null || patientLastName.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Last name can't be empty");
+        }
+        if (patientPESEL == null || patientPESEL.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "PESEL name can't be empty");
+        }
+        if (projectBody == null || projectBody.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Project body can't be empty");
+        }
     }
 }

@@ -31,14 +31,15 @@ public class UserController {
     @PutMapping(path = "/sendResetPasswordCode")
     @ResponseBody
     public void sendResetPasswordCode(@RequestBody EmailDTO email) {
-        IUserService.sendResetPasswordCode(email.email);
+        IUserService.sendResetPasswordCode(email.toDomain());
     }
 
     @PostMapping(path = "/resetPassword")
     @ResponseBody
-    public void resetPassword(@RequestBody ResetPasswordRequest email) {
+    public void resetPassword(@RequestBody ResetPasswordRequest request) {
         try {
-            IUserService.resetPasswordCode(email.email, email.code, email.newPassword);
+            request.validateFields();
+            IUserService.resetPasswordCode(request.email, request.code, request.newPassword);
         } catch (CustomException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }

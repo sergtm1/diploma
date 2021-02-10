@@ -29,6 +29,7 @@ public class ProjectController {
     @ResponseBody
     public void save(@RequestBody CreateProjectRequest request) {
         try {
+            request.validateFields();
             projectService.createProject(request);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Can't get bytes of image");
@@ -41,6 +42,7 @@ public class ProjectController {
     @ResponseBody
     public void update(@RequestBody UpdateProjectRequest request) {
         try {
+            request.validateFields();
             projectService.updateProject(request);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Can't get bytes of image");
