@@ -33,6 +33,9 @@ public class UpdateProjectRequest {
     }
 
     public void validateFields() {
+        if (id == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Id must be present");
+        }
         if (!Pattern.compile(regex).matcher(email).matches()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     String.format("Passed email has wrong format. email: %s", email));
