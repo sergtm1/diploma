@@ -39,7 +39,7 @@ public class ProjectService implements IProjectService {
 
     @Override
     @Transactional
-    public Integer createProject(CreateProjectRequest request) throws MissingObjectException {
+    public ProjectDTO createProject(CreateProjectRequest request) throws MissingObjectException {
         Project project = new Project();
         project.setUser(userService.getUser(request.email));
         Optional<Patient> patientByPesel = patientService.findPatientByPesel(request.patientPESEL);
@@ -47,13 +47,12 @@ public class ProjectService implements IProjectService {
         project.setPatient(patient);
         project.setName(request.projectName);
         project.setProjectSettings(request.projectBody);
-        Project savedProject = projectRepository.save(project);
-        return savedProject.getId();
+        return projectRepository.save(project).toDTO();
     }
 
     @Override
     @Transactional
-    public Integer updateProject(UpdateProjectRequest request) throws MissingObjectException, IOException {
+    public ProjectDTO updateProject(UpdateProjectRequest request) throws MissingObjectException, IOException {
         Project project = projectRepository.findById(request.id)
                 .orElseThrow(() -> new MissingObjectException("Can't load project"));
         project.setUser(userService.getUser(request.email));
@@ -62,8 +61,7 @@ public class ProjectService implements IProjectService {
         project.setPatient(patient);
         project.setName(request.projectName);
         project.setProjectSettings(request.projectBody);
-        Project savedProject = projectRepository.save(project);
-        return savedProject.getId();
+        return projectRepository.save(project).toDTO();
     }
 
     @Override

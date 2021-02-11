@@ -27,10 +27,10 @@ public class ProjectController {
 
     @PostMapping(path = "/save")
     @ResponseBody
-    public void save(@RequestBody CreateProjectRequest request) {
+    public ProjectDTO save(@RequestBody CreateProjectRequest request) {
         try {
             request.validateFields();
-            projectService.createProject(request);
+            return projectService.createProject(request);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Can't get bytes of image");
         } catch (MissingObjectException e) {
@@ -40,10 +40,10 @@ public class ProjectController {
 
     @PostMapping(path = "/update")
     @ResponseBody
-    public void update(@RequestBody UpdateProjectRequest request) {
+    public ProjectDTO update(@RequestBody UpdateProjectRequest request) {
         try {
             request.validateFields();
-            projectService.updateProject(request);
+            return projectService.updateProject(request);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Can't get bytes of image");
         } catch (MissingObjectException e) {

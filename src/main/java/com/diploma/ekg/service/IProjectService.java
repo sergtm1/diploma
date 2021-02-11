@@ -10,9 +10,9 @@ import java.util.Collection;
 
 public interface IProjectService {
 
-    Integer createProject(CreateProjectRequest request) throws MissingObjectException, IOException;
+    ProjectDTO createProject(CreateProjectRequest request) throws MissingObjectException, IOException;
 
-    Integer updateProject(UpdateProjectRequest request) throws MissingObjectException, IOException;
+    ProjectDTO updateProject(UpdateProjectRequest request) throws MissingObjectException, IOException;
 
     void deleteProject(Integer id);
 
