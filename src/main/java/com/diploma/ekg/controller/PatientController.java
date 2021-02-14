@@ -26,6 +26,7 @@ public class PatientController {
     }
 
     @GetMapping(path = "/getAll")
+    @ResponseBody
     public Collection<PatientDTO> getPatients() {
         return patientService.getAll();
     }

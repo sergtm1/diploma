@@ -52,11 +52,13 @@ public class ProjectController {
     }
 
     @GetMapping(path = "/getAll")
+    @ResponseBody
     public Collection<ProjectDTO> getAllProjects() {
         return projectService.getAll();
     }
 
     @GetMapping(path = "/getUserProjects")
+    @ResponseBody
     public Collection<ProjectDTO> getProjectsOfUser(@RequestParam String username) {
         try {
             return projectService.getProjectsOfUser(username);
@@ -66,6 +68,7 @@ public class ProjectController {
     }
 
     @GetMapping(path = "/getProjectsForPatient")
+    @ResponseBody
     public Collection<ProjectDTO> getProjectsForPatient(@RequestParam String username, @RequestParam Integer patientId) {
         try {
             return projectService.getProjectsForPatient(username, patientId);
